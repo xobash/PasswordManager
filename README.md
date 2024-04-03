@@ -4,7 +4,7 @@ This is a simple password manager application built using Python and Tkinter GUI
 
 #### Features:
 
-1. **Secure Password Storage:** Passwords are encrypted using AES encryption before being stored in the SQLite3 database, ensuring basic security.
+1. **Secure Password Storage:** Passwords are encrypted using AES encryption before being stored in the SQLite3 database.
    
 2. **Dark Mode:** Users can toggle between light and dark mode according to their preference.
 
