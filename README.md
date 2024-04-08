@@ -4,15 +4,23 @@ This is a simple password manager application using Tkinter for the GUI, SQLite 
 
 #### Features:
 
-1. **Secure Password Storage:** Passwords are encrypted using AES encryption before being stored in the SQLite3 database.
+- **Master Password:** Hashing of the master password using PBKDF2-HMAC-SHA256 algorithm.
 
-2. **Dark Mode:** Users can toggle between light and dark mode according to their preference.
+- **Keyring integration:** Setting and retrieving the master password securely using the keyring library.
 
-3. **User-friendly Interface:** The application provides a simple and intuitive interface for users to add, view, and manage their passwords easily.
+- **Secure Access:** Prompting the user to enter the master password for authentication.
 
-4. **Master Password:** Users are prompted to set a master password upon opening the program, ensuring additional security. This will be used to encrypt/decrypt & view the passwords within the program. 
+- **Secure Password Storage:** Passwords are encrypted using AES encryption before being stored in the SQLite3 database.
 
-5. **Import and Export (Beta):** Users can import passwords from and export passwords to a .csv file.
+- **Dark Mode:** Users can toggle between light and dark mode according to their preference.
+
+- **User-friendly Interface:** The application provides a simple and intuitive interface for users to add, view, and manage their passwords easily.
+
+- **Import and Export (Beta):** Users can import passwords from and export passwords to a .csv file.
+
+- **Search Functionality:** Search functionality to retrieve passwords based on website names.
+
+- **Settings Menu** Quick settings menu for importing/exporting passwords and toggling dark mode.
 
 #### Getting Started:
 
