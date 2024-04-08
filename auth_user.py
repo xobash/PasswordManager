@@ -51,39 +51,40 @@ class AuthUser:
                 if not retry:
                     return False
 
-def prompt_for_master_password(self):
-    try:
-        master_password_hash = keyring.get_password("password_manager", "master_password")
-        if master_password_hash:
+    def prompt_for_master_password(self):
+        try:
+            master_password_hash = keyring.get_password("password_manager", "master_password")
+            print("Retrieved master password hash:", master_password_hash)  # Debug statement
+            if not master_password_hash:
+                return self.set_master_password()
+
             while True:
                 entered_password = simpledialog.askstring("Enter Master Password", "Enter Master Password:", show="*")
-                if entered_password:
-                    salt = keyring.get_password("password_manager", "salt")
-                    if salt:
-                        salt = bytes.fromhex(salt)
-                        entered_password_hash = self.hash_master_password(entered_password, salt)
-                        if entered_password_hash:
-                            stored_hash_bytes = bytes.fromhex(master_password_hash)
-                            if len(stored_hash_bytes) == len(entered_password_hash) and \
-                               hashlib.compare_digest(entered_password_hash, stored_hash_bytes): # hashlib.compare_digest used. This change improves the security of the authentication process by mitigating certain timing attacks.
-                                app_root = tk.Toplevel()  # Create a new window for the app
-                                app = PasswordManagerApp(app_root)
-                                return True
-                            else:
-                                messagebox.showerror("Error", "Incorrect master password. Please try again.")
-                                return False
-                        else:
-                            return False
-                    else:
-                        messagebox.showerror("Error", "Salt not found. Please set the master password.")
-                        return False
-                else:
+                if not entered_password:
                     return False
-        else:
-            return self.set_master_password()
-    except Exception as e:
-        messagebox.showerror("Error", f"An error occurred during authentication: {e}")
-        return False
+
+                salt = keyring.get_password("password_manager", "salt")
+                print("Retrieved salt:", salt)  # Debug statement
+                if not salt:
+                    messagebox.showerror("Error", "Salt not found. Please set the master password.")
+                    return False
+
+                salt = bytes.fromhex(salt)
+                entered_password_hash = self.hash_master_password(entered_password, salt)
+                print("Entered password hash:", entered_password_hash.hex())  # Debug statement
+
+                stored_hash = bytes.fromhex(master_password_hash)
+                if not hashlib.compare_digest(entered_password_hash.hex(), stored_hash.hex()):
+                    messagebox.showerror("Error", "Incorrect master password. Please try again.")
+                    return False
+
+                app_root = tk.Toplevel()  # Create a new window for the app
+                app = PasswordManagerApp(app_root)
+                return True
+
+        except Exception as e:
+            messagebox.showerror("Error", f"An error occurred during authentication: {e}")
+            return False
 
     def check_authentication(self):
         if not self.prompt_for_master_password():
