@@ -1,3 +1,4 @@
+# AuthUser class with improvements and fixes
 import tkinter as tk
 from tkinter import messagebox, simpledialog
 import secrets
@@ -6,6 +7,8 @@ import keyring
 from password_manager import PasswordManagerApp
 
 class AuthUser:
+    app_instance = None
+
     def __init__(self, root):
         self.root = root
         self.root.withdraw()
@@ -36,7 +39,7 @@ class AuthUser:
                         try:
                             keyring.set_password("password_manager", "master_password", hashed_password.hex())
                             keyring.set_password("password_manager", "salt", salt.hex())
-                            messagebox.showinfo("kek", "You've Got Mail.")
+                            messagebox.showinfo("Success", "Master password set successfully!")
                             return True
                         except Exception as e:
                             messagebox.showerror("Error", f"An error occurred while setting the master password: {e}")
@@ -59,7 +62,7 @@ class AuthUser:
                 return self.set_master_password()
 
             while True:
-                entered_password = simpledialog.askstring("Enter Master Password", "Enter Master Password:", show="*")
+                entered_password = simpledialog.askstring("You Shall Not Pass", "Enter Master Password:", show="*")
                 if not entered_password:
                     return False
 
@@ -69,18 +72,19 @@ class AuthUser:
                     messagebox.showerror("Error", "Salt not found. Please set the master password.")
                     return False
 
-                salt = bytes.fromhex(salt)
-                entered_password_hash = self.hash_master_password(entered_password, salt)
-                print("Entered password hash:", entered_password_hash.hex())  # Debug statement
+                # Hash the entered password with the retrieved salt
+                entered_password_hash = self.hash_master_password(entered_password, bytes.fromhex(salt))
 
+                # Convert stored hash from hex to bytes
                 stored_hash = bytes.fromhex(master_password_hash)
-                if not hashlib.compare_digest(entered_password_hash.hex(), stored_hash.hex()):
+
+                # Compare the entered password hash with the stored hash
+                if entered_password_hash == stored_hash:
+                    app = PasswordManagerApp(self.root)
+                    return True
+                else:
                     messagebox.showerror("Error", "Incorrect master password. Please try again.")
                     return False
-
-                app_root = tk.Toplevel()  # Create a new window for the app
-                app = PasswordManagerApp(app_root)
-                return True
 
         except Exception as e:
             messagebox.showerror("Error", f"An error occurred during authentication: {e}")
@@ -92,9 +96,19 @@ class AuthUser:
             return False
         else:
             try:
-                app_root = tk.Toplevel()  # Create a new window for the app
-                app = PasswordManagerApp(app_root)
-                return True
+                if not AuthUser.app_instance:
+                    self.app_root = tk.Toplevel()  # Create a new window for the app if it doesn't exist
+                    AuthUser.app_instance = PasswordManagerApp(self.app_root)
+                else:
+                    self.app_root = AuthUser.app_instance.root.winfo_toplevel()  # Get the top-level window of the existing instance
+                
+                # Ensure that self.app_root is not None before attempting to deiconify it
+                if self.app_root:
+                    self.app_root.deiconify()  # Show the existing instance
+                    return True
+                else:
+                    messagebox.showerror("Error", "Failed to initialize the Password Manager app.")
+                    return False
             except Exception as e:
                 messagebox.showerror("Error", f"An error occurred while launching the Password Manager app: {e}")
                 return False
