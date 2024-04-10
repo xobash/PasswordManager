@@ -39,7 +39,7 @@ class AuthUser:
                         try:
                             keyring.set_password("password_manager", "master_password", hashed_password.hex())
                             keyring.set_password("password_manager", "salt", salt.hex())
-                            messagebox.showinfo("Success", "Master password set successfully!")
+                            messagebox.showinfo("kek", "Master password set successfully!")
                             return True
                         except Exception as e:
                             messagebox.showerror("Error", f"An error occurred while setting the master password: {e}")
@@ -57,7 +57,6 @@ class AuthUser:
     def prompt_for_master_password(self):
         try:
             master_password_hash = keyring.get_password("password_manager", "master_password")
-            print("Retrieved master password hash:", master_password_hash)  # Debug statement
             if not master_password_hash:
                 return self.set_master_password()
 
@@ -67,7 +66,6 @@ class AuthUser:
                     return False
 
                 salt = keyring.get_password("password_manager", "salt")
-                print("Retrieved salt:", salt)  # Debug statement
                 if not salt:
                     messagebox.showerror("Error", "Salt not found. Please set the master password.")
                     return False
@@ -91,24 +89,20 @@ class AuthUser:
             return False
 
     def check_authentication(self):
-        if not self.prompt_for_master_password():
-            self.root.destroy()
-            return False
-        else:
+        if self.prompt_for_master_password():
             try:
-                if not AuthUser.app_instance:
-                    self.app_root = tk.Toplevel()  # Create a new window for the app if it doesn't exist
-                    AuthUser.app_instance = PasswordManagerApp(self.app_root)
-                else:
-                    self.app_root = AuthUser.app_instance.root.winfo_toplevel()  # Get the top-level window of the existing instance
-                
-                # Ensure that self.app_root is not None before attempting to deiconify it
-                if self.app_root:
-                    self.app_root.deiconify()  # Show the existing instance
-                    return True
-                else:
-                    messagebox.showerror("Error", "Failed to initialize the Password Manager app.")
-                    return False
+                root = tk.Tk()
+                app = PasswordManagerApp(root)
+                messagebox.showinfo("kek","security is just an illusion")
+                root.mainloop()
+                return True
             except Exception as e:
                 messagebox.showerror("Error", f"An error occurred while launching the Password Manager app: {e}")
                 return False
+        else:
+            return False
+
+if __name__ == "__main__":
+    root = tk.Tk()
+    auth_user = AuthUser(root)
+    auth_user.check_authentication()
