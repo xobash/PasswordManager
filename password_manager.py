@@ -12,6 +12,7 @@ class PasswordManagerApp:
         self.root.title("Simple Password Manager by xobash") # Yours truly :)
         self.dark_mode = True  # Initialize dark_mode globally in the PasswordManagerApp class.
         # Initialize labels as attributes here so that they fucntion later.
+        self.add_button = None
         self.website_label = None
         self.username_label = None
         self.password_label = None
@@ -22,9 +23,16 @@ class PasswordManagerApp:
         self.key_entry = None
         self.store_button = None
         self.password_generator_button = None
-        self.password_generator_label = None
         self.password_widget = None
         self.generate_button = None
+        self.search_label_widget = None
+        self.search_entry = None
+        self.all_settings_button = None
+        self.add_button = None
+        self.settings_button = None
+        self.left_frame = None
+        self.middle_frame = None
+        self.right_frame = None
         self.create_widgets()
 
         # Bind MB1 to start_move method. 
@@ -34,14 +42,68 @@ class PasswordManagerApp:
         self.offset_x = 0
         self.offset_y = 0
 
+        self.accent_color = "#21262d" if self.dark_mode else "light gray"
+        self.background_color = "#0d1117" if self.dark_mode else "white"
+        self.foreground_color = "#c9d1d9" if self.dark_mode else "black"
+        self.accent_color = "#21262d" if self.dark_mode else "light gray"
+
+    def update_widgets(self):
+        try:
+            # Configure the root, this will not be changing.
+            self.root.config(bg=self.background_color)
+            self.title_label.config(bg=self.background_color, fg=self.foreground_color)
+
+            # List of tuples containing widget references and their configuration options
+            widgets = [
+                (self.add_button, {"bg": self.background_color, "fg": self.foreground_color}),
+                (self.website_label, {"bg": self.background_color, "fg": self.foreground_color}),
+                (self.username_label, {"bg": self.background_color, "fg": self.foreground_color}),
+                (self.password_label, {"bg": self.background_color, "fg": self.foreground_color}),
+                (self.website_entry_widget, {"bg": self.background_color, "fg": self.foreground_color}),
+                (self.username_entry_widget, {"bg": self.background_color, "fg": self.foreground_color}),
+                (self.password_entry_widget, {"bg": self.background_color, "fg": self.foreground_color}),
+                (self.key_label, {"bg": self.background_color, "fg": self.foreground_color}),
+                (self.key_entry, {"bg": self.background_color, "fg": self.foreground_color}),
+                (self.store_button, {"bg": self.accent_color, "fg": self.foreground_color}),  
+                (self.password_generator_button, {"bg": self.accent_color, "fg": self.foreground_color}),  
+                (self.password_widget, {"bg": self.background_color, "fg": self.foreground_color}),
+                (self.generate_button, {"bg": self.accent_color, "fg": self.foreground_color}),  
+                (self.search_label_widget, {"bg": self.background_color, "fg": self.foreground_color}),
+                (self.search_entry, {"bg": self.background_color, "fg": self.foreground_color}),
+                (self.all_settings_button, {"bg": self.background_color, "fg": self.foreground_color}),
+                (self.add_button, {"bg": self.background_color, "fg": self.foreground_color}),
+                (self.settings_button, {"bg": self.background_color, "fg": self.foreground_color}),
+                (self.left_frame, {"bg": self.background_color, "fg": self.foreground_color}),
+                (self.middle_frame, {"bg": self.background_color, "fg": self.foreground_color}),
+                (self.right_frame, {"bg": self.background_color, "fg": self.foreground_color}),
+            ]
+
+            # Iterate over the list and configure each widget
+            for widget, config_options in widgets:
+                if widget is not None:
+                    widget.config(**config_options)
+
+
+        except Exception as e:
+            messagebox.showerror("Error", f"An error occurred: {e}")
+
     def start_move(self, event):
-        self.offset_x = event.x
-        self.offset_y = event.y
+        # Record the initial click position
+        self.offset_x = event.x_root
+        self.offset_y = event.y_root
 
     def on_move(self, event):
-        x = self.root.winfo_pointerx() - self.offset_x
-        y = self.root.winfo_pointery() - self.offset_y
-        self.root.geometry(f"+{x}+{y}")
+        # Calculate the new position of the window relative to the initial click position and offset
+        new_x = self.root.winfo_pointerx() - self.offset_x
+        new_y = self.root.winfo_pointery() - self.offset_y
+
+        # Get the screen width and height
+        screen_width = self.root.winfo_screenwidth()
+        screen_height = self.root.winfo_screenheight()
+
+        # Limit the movement to keep the window within the screen boundaries
+        if 0 <= new_x <= screen_width and 0 <= new_y <= screen_height:
+            self.root.geometry(f"+{new_x}+{new_y}")
 
     def stop_move(self, event):
         self.offset_x = 0
@@ -116,89 +178,6 @@ class PasswordManagerApp:
             if conn:
                 conn.close()
 
-    def update_widgets(self):
-        try:
-            # Define the dark mode theme for the update widgets method.
-            background_color = "#0d1117" if self.dark_mode else "white"
-            foreground_color = "#c9d1d9" if self.dark_mode else "black"
-            accent_color = "#21262d" if self.dark_mode else "light gray"
-
-            # Configure the root, this will not be changing.
-            self.root.config(bg=background_color)
-            self.title_label.config(bg=background_color, fg=foreground_color)
-
-            # List of tuples containing widget references and their configuration options
-            widgets = [
-                (self.website_label, {"bg": background_color, "fg": foreground_color}),
-                (self.username_label, {"bg": background_color, "fg": foreground_color}),
-                (self.password_label, {"bg": background_color, "fg": foreground_color}),
-                (self.website_entry_widget, {"bg": background_color, "fg": foreground_color}),
-                (self.username_entry_widget, {"bg": background_color, "fg": foreground_color}),
-                (self.password_entry_widget, {"bg": background_color, "fg": foreground_color}),
-                (self.key_label, {"bg": background_color, "fg": foreground_color}),
-                (self.key_entry, {"bg": background_color, "fg": foreground_color}),
-                (self.store_button, {"bg": accent_color, "fg": foreground_color}),
-                (self.password_generator_button, {"bg": accent_color, "fg": foreground_color}),
-                (self.password_widget, {"bg": background_color, "fg": foreground_color}),
-                (self.generate_button, {"bg": accent_color, "fg": foreground_color}),
-                (self.search_label_widget, {"bg": background_color, "fg": foreground_color}),
-                (self.search_entry, {"bg": background_color, "fg": foreground_color}),
-                (self.all_settings_button, {"bg": background_color, "fg": foreground_color}),
-                (self.add_button, {"bg": background_color, "fg": foreground_color}),
-                (self.settings_button, {"bg": background_color, "fg": foreground_color}),
-                (self.left_frame, {"bg": background_color, "fg": foreground_color}),
-                (self.middle_frame, {"bg": background_color, "fg": foreground_color}),
-                (self.right_frame, {"bg": background_color, "fg": foreground_color}),
-            ]
-
-
-                # Iterate over the list and configure each widget
-            for widget, config_options in widgets:
-                if widget:
-                    widget.config(**config_options)
-
-        except Exception as e:
-            messagebox.showerror("Error", f"An error occurred: {e}")
-
-    def create_widgets(self):
-        try:
-            # Define theme for light and dark mode.
-            background_color = "#0d1117" if self.dark_mode else "white"
-            foreground_color = "#c9d1d9" if self.dark_mode else "black"
-            accent_color = "#21262d" if self.dark_mode else "light gray"
-
-            self.title_label = Label(self.root, text="Simple Password Manager by xobash", font=("Arial", 12), padx=10, pady=10, bg=background_color, fg=foreground_color)
-            self.title_label.grid(row=0, column=0, columnspan=1, sticky="nsew")
-            self.left_frame = tk.Frame(self.root, width=100, padx=10, pady=10, bg=background_color)
-            self.left_frame.grid(row=1, column=0, sticky="nsew")
-            self.middle_frame = tk.Frame(self.root, padx=10, pady=10, bg=background_color)
-            self.middle_frame.grid(row=1, column=1, sticky="nsew")
-            self.right_frame = tk.Frame(self.root, padx=10, pady=10, bg=background_color)
-            self.right_frame.grid(row=1, column=2, sticky="nsew")
-            self.all_settings_button = tk.Button(self.left_frame, text="All Settings", padx=10, pady=5, bg=accent_color, fg=foreground_color)
-            self.all_settings_button.pack(fill="x", padx=10, pady=(20, 5))
-               
-            # Create search label after middle_frame is created
-            self.create_search_label()
-            self.add_button = Button(self.root, text="+", font=("Arial", 10), bd=0, command=self.add_password_entry, bg=background_color, fg=foreground_color)
-            self.add_button.grid(row=0, column=1, padx=10, pady=10, sticky="ne")
-            self.favorites_button = tk.Button(self.left_frame, text="Favorites (beta)", padx=10, pady=5, bg=accent_color, fg=foreground_color)
-            self.favorites_button.pack(fill="x", padx=10, pady=5)
-            self.notes_button = tk.Button(self.left_frame, text="Notes (beta)", padx=10, pady=5, bg=accent_color, fg=foreground_color)
-            self.notes_button.pack(fill="x", padx=10, pady=5)
-            self.passwords_button = tk.Button(self.left_frame, text="Passwords (beta)", padx=10, pady=5, bg=accent_color, fg=foreground_color)
-            self.passwords_button.pack(fill="x", padx=10, pady=5)
-            self.tags_button = tk.Button(self.left_frame, text="Tags", padx=10, pady=5, bg=accent_color, fg=foreground_color)
-            self.tags_button.pack(fill="x", padx=10, pady=5)
-            self.password_generator_button = tk.Button(self.left_frame, text="Password Generator", padx=1, pady=5, command=self.password_generator, bg=accent_color, fg=foreground_color)
-            self.password_generator_button.pack(fill="x", padx=10, pady=5)
-            self.settings_button = tk.Button(self.root, text="\u2630", font=("Arial", 10), bd=0, command=self.create_settings_menu, bg=background_color, fg=foreground_color)
-            self.settings_button.grid(row=0, column=2, padx=10, pady=10, sticky="ne")
-            self.update_widgets()  # Call update_widgets initially
-    
-        except Exception as e:
-            messagebox.showerror("Error", f"An error occurred: {e}")
-
     # Meridia will be blown up - John Helldiver
     def create_search_label(self): # No need for error handling here.
             background_color = "#0d1117" if self.dark_mode else "white"
@@ -216,19 +195,15 @@ class PasswordManagerApp:
     def password_generator(self):
         try:
             middle_frame = self.middle_frame # Define middle frame here so it works moving forward.
-            background_color = "#0d1117" if self.dark_mode else "white"
-            foreground_color = "#c9d1d9" if self.dark_mode else "black"
-            accent_color = "#21262d" if self.dark_mode else "light gray"
-
             # Clear the middle column.
             for widget in middle_frame.winfo_children(): 
                 if widget not in [self.search_label_widget, self.search_entry]:
                     widget.destroy()
 
-            self.password_generator_label = Label(middle_frame, text="Password Generator by xobash", bg=background_color, fg=foreground_color)
+            self.password_generator_label = Label(middle_frame, text="Password Generator by xobash", bg=self.background_color, fg=self.foreground_color)
             self.password_generator_label.grid(row=2, column=0, sticky="e")
 
-            self.password_label = Label(middle_frame, text="Password:", padx=10, pady=10, bg=background_color, fg=foreground_color)
+            self.password_label = Label(middle_frame, text="Password:", padx=10, pady=10, bg=self.background_color, fg=self.foreground_color)
             self.password_label.grid(row=4, column=0, sticky="e")
             self.password_widget = Entry(middle_frame, width=30)
             self.password_widget.grid(row=4, column=1, padx=10, pady=10)
@@ -242,7 +217,7 @@ class PasswordManagerApp:
                     # Display the generated password
                     self.password_widget.delete(0, tk.END)
                     self.password_widget.insert(0, generated_password)
-                    self.update_widgets()
+                    self.update_widgets(background_color, foreground_color,)
                 except Exception as e:
                     # Error handling.
                     messagebox.showerror("Error", f"An error occurred: {e}") 
@@ -260,10 +235,10 @@ class PasswordManagerApp:
                         conn.close()
     
             # Buttons for generating and storing passwords
-            self.generate_button = Button(middle_frame, text="Generate Password", command=generate_secure_password, bg=accent_color, fg=foreground_color)
+            self.generate_button = Button(middle_frame, text="Generate Password", command=generate_secure_password, bg=self.accent_color, fg=self.foreground_color)
             self.generate_button.grid(row=5, column=0, columnspan=2, pady=10)
 
-            self.store_button = Button(middle_frame, text="Store Password", command=store_generated_password, bg=accent_color, fg=foreground_color)
+            self.store_button = Button(middle_frame, text="Store Password", command=store_generated_password, bg=self.accent_color, fg=self.foreground_color)
             self.store_button.grid(row=6, column=0, columnspan=2, pady=10)
             self.update_widgets()
         except Exception as e:
@@ -279,9 +254,6 @@ class PasswordManagerApp:
     def add_password_entry(self):
         try:
             middle_frame = self.middle_frame  # Define middle_frame here so it works in the method.
-            background_color = "#0d1117" if self.dark_mode else "white"
-            foreground_color = "#c9d1d9" if self.dark_mode else "black"
-            accent_color = "#21262d" if self.dark_mode else "light gray"
 
             for widget in middle_frame.winfo_children():  # BURN THE CHILDREN
                 if widget not in [self.search_label_widget, self.search_entry]:
@@ -289,21 +261,21 @@ class PasswordManagerApp:
 
             # Check if website entry widget exists before accessing it.
             if not hasattr(self, 'website_entry_widget'):
-                self.website_label = Label(middle_frame, text="Website:", font=("Arial", 10), padx=10, pady=10,bg=background_color, fg=foreground_color)
+                self.website_label = Label(middle_frame, text="Website:", font=("Arial", 10), padx=10, pady=10,bg=self.background_color, fg=self.foreground_color)
                 self.website_label.grid(row=2, column=0, sticky="e")
                 self.website_entry_widget = Entry(middle_frame, width=30)
                 self.website_entry_widget.grid(row=2, column=1, padx=10, pady=10)
 
             # Check if username entry widget exists before accessing it.
             if not hasattr(self, 'username_entry_widget'):
-                self.username_label = Label(middle_frame, text="Username:", font=("Arial", 10), padx=10, pady=10,bg=background_color, fg=foreground_color)
+                self.username_label = Label(middle_frame, text="Username:", font=("Arial", 10), padx=10, pady=10,bg=self.background_color, fg=self.foreground_color)
                 self.username_label.grid(row=3, column=0, sticky="e")
                 self.username_entry_widget = Entry(middle_frame, width=30)
                 self.username_entry_widget.grid(row=3, column=1, padx=10, pady=10)
 
             # Check if password entry widget exists before accessing it.
             if not hasattr(self, 'password_entry_widget'):
-                self.password_label = Label(middle_frame, text="Password:", font=("Arial", 10), padx=10, pady=10,bg=background_color, fg=foreground_color)
+                self.password_label = Label(middle_frame, text="Password:", font=("Arial", 10), padx=10, pady=10,bg=self.background_color, fg=self.foreground_color)
                 self.password_label.grid(row=4, column=0, sticky="e")
                 self.password_entry_widget = Entry(middle_frame, width=30, show="*")
                 self.password_entry_widget.grid(row=4, column=1, padx=10, pady=10)
@@ -312,7 +284,7 @@ class PasswordManagerApp:
             custom_key = messagebox.askyesno("Use Custom Key","Do you want to use your own encryption key? If you choose not to, everything will be encrypted using an autogenerated key. This is not recommended and can lead to data loss.")
             if custom_key:
                 if not hasattr(self, 'key_entry'):
-                    self.key_label = Label(middle_frame, text="Key:", font=("Arial", 10), padx=10, pady=10,bg=background_color, fg=foreground_color)
+                    self.key_label = Label(middle_frame, text="Key:", font=("Arial", 10), padx=10, pady=10,bg=self.background_color, fg=self.foreground_color)
                     self.key_label.grid(row=5, column=0, sticky="e")
                     self.key_entry = Entry(middle_frame, width=30)
                     self.key_entry.grid(row=5, column=1, padx=10, pady=10)
@@ -320,16 +292,16 @@ class PasswordManagerApp:
                 self.key_entry = None  # custom encryption key was not used.
 
             # Generate encryption key if not provided by the user - not sure if this will work when decrypting.
-            if custom_key and hasattr(self, 'key_entry'):
-                key = self.key_entry.get()
+            if not custom_key:
+                key = self.generate_key()  # Generate key only if not using a custom key
             else:
-                key = self.generate_key()
+                key = self.key_entry.get() if self.key_entry else None  # Retrieve the custom key from the entry widget if exists
 
             # Create and grid store button
             if not hasattr(self, 'store_button'):
-                self.store_button = Button(middle_frame, text="Store Securely using AES",command=lambda: self.store_password(self.website_entry_widget.get(), self.username_entry_widget.get(),self.password_entry_widget.get(), key), bg=accent_color,fg=foreground_color)
+                self.store_button = Button(middle_frame, text="Store Securely using AES",command=lambda: self.store_password(self.website_entry_widget.get(), self.username_entry_widget.get(),self.password_entry_widget.get(), key), bg=self.accent_color,fg=self.foreground_color)
                 self.store_button.grid(row=6, column=1, padx=10, pady=10)
-                self.update_widgets()
+                self.update_widgets(background_color, foreground_color,)
 
         except Exception as e:
             # Error handling.
@@ -368,6 +340,44 @@ class PasswordManagerApp:
                 conn.close()
         except Exception as e:
             # Error handling.
+            messagebox.showerror("Error", f"An error occurred: {e}")
+
+    def create_widgets(self):
+        try:
+            # Define accent_color within create_widgets method
+            accent_color = self.accent_color
+            background_color = self.background_color
+            foreground_color = self.foreground_color
+
+            self.title_label = Label(self.root, text="Simple Password Manager by xobash", font=("Arial", 12), padx=10, pady=10, bg=background_color, fg=foreground_color)
+            self.title_label.grid(row=0, column=0, columnspan=1, sticky="nsew")
+            self.left_frame = tk.Frame(self.root, width=100, padx=10, pady=10, bg=background_color)
+            self.left_frame.grid(row=1, column=0, sticky="nsew")
+            self.middle_frame = tk.Frame(self.root, padx=10, pady=10, bg=background_color)
+            self.middle_frame.grid(row=1, column=1, sticky="nsew")
+            self.right_frame = tk.Frame(self.root, padx=10, pady=10, bg=background_color)
+            self.right_frame.grid(row=1, column=2, sticky="nsew")
+            self.all_settings_button = tk.Button(self.left_frame, text="All Settings", padx=10, pady=5, bg=self.accent_color)
+            self.all_settings_button.pack(fill="x", padx=10, pady=(20, 5))
+            self.add_button = Button(self.root, text="+", font=("Arial", 10), bd=0, command=self.add_password_entry, bg=self.background_color, fg=self.foreground_color)
+            self.add_button.grid(row=0, column=1, padx=10, pady=10, sticky="ne")               
+            # Create search label after middle_frame is created
+            self.create_search_label()
+            self.favorites_button = tk.Button(self.left_frame, text="Favorites (beta)", padx=10, pady=5, bg=self.accent_color, fg=self.foreground_color)
+            self.favorites_button.pack(fill="x", padx=10, pady=5)
+            self.notes_button = tk.Button(self.left_frame, text="Notes (beta)", padx=10, pady=5, bg=self.accent_color, fg=self.foreground_color)
+            self.notes_button.pack(fill="x", padx=10, pady=5)
+            self.passwords_button = tk.Button(self.left_frame, text="Passwords (beta)", padx=10, pady=5, bg=self.accent_color, fg=self.foreground_color)
+            self.passwords_button.pack(fill="x", padx=10, pady=5)
+            self.tags_button = tk.Button(self.left_frame, text="Tags", padx=10, pady=5, bg=self.accent_color, fg=foreground_color)
+            self.tags_button.pack(fill="x", padx=10, pady=5)
+            self.password_generator_button = tk.Button(self.left_frame, text="Password Generator", padx=1, pady=5, command=self.password_generator, bg=self.accent_color, fg=self.foreground_color)
+            self.password_generator_button.pack(fill="x", padx=10, pady=5)
+            self.settings_button = tk.Button(self.root, text="\u2630", font=("Arial", 10), bd=0, command=self.create_settings_menu, bg=background_color, fg=foreground_color)
+            self.settings_button.grid(row=0, column=2, padx=10, pady=10, sticky="ne")
+            self.update_widgets()  # Call update_widgets initially
+
+        except Exception as e:
             messagebox.showerror("Error", f"An error occurred: {e}")
 
     def create_settings_menu(self):
